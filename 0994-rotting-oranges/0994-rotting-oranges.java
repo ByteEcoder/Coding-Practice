@@ -1,52 +1,74 @@
 class Solution {
-    int n,m;
     public int orangesRotting(int[][] grid) {
-        n=grid.length;
-        m=grid[0].length;
-        int[][] time=new int[n][m];
-        int count=0;
-        for(int i[]:time)
-        {
-            Arrays.fill(i,Integer.MAX_VALUE);
-        }
-         for(int i=0;i<n;i++)
+    int n=grid.length;
+    int m=grid[0].length;
+    Queue<List<Integer>> q=new ArrayDeque<>();
+        int rot=0;
+        int fresh=0;
+        for(int i=0;i<n;i++)
         {
             for(int j=0;j<m;j++)
             {
-                if( grid[i][j]==2)
-                    {
-                        dfs(grid,time,i,j,0);
-                    }
-            }
-        }
-        
-         for(int i=0;i<n;i++)
-        {
-            for(int j=0;j<m;j++)
-            {
-                if(grid[i][j]==1 && time[i][j]==Integer.MAX_VALUE)
-                    return -1;
-
+                if(grid[i][j]==2)
+                   { q.add(Arrays.asList(i, j));
+                    rot++;
+                   }
                 if(grid[i][j]==1)
-                count=Math.max(count,time[i][j]);
+                    fresh++;
             }
         }
-        return count;
+        if(fresh==0)
+            return 0;
+        if(rot==0 && fresh!=0)
+            return -1;
+        int days=0;
+        while(!q.isEmpty())
+        {
+            int rotten=q.size();  //q<(0,1),(1,0)>
+            boolean flag=false;
+            while(rotten!=0)
+            {
+                List<Integer> temp=q.poll();
+                int r=temp.get(0);
+                int c=temp.get(1);
+                if(c+1<m && grid[r][c+1]==1)//right c=0,r=0
+                {
+                    grid[r][c+1]=2;
+                    q.add(Arrays.asList(r, c+1)); //q<(0,1)>
+                    flag=true;
+                    fresh--;
+                }
+                if(c-1>=0 && grid[r][c-1]==1)//left
+                {
+                    grid[r][c-1]=2;
+                    q.add(Arrays.asList(r, c-1));
+                    flag=true;
+                    fresh--;
+                }
+                if(r-1>=0 && grid[r-1][c]==1)//top
+                {
+                    grid[r-1][c]=2;
+                    q.add(Arrays.asList(r-1, c));
+                    flag=true;
+                    fresh--;
+                }
+                if(r+1<n && grid[r+1][c]==1)//down
+                {
+                    grid[r+1][c]=2;
+                    q.add(Arrays.asList(r+1, c));
+                    flag=true;
+                    fresh--;
+                }
 
+                rotten--;
+            }
 
-    }
-
-    public void dfs(int[][] grid,int[][] time,int i, int j,int t)
-    {
-        if(i<0 || j<0 || i>=n || j>=m || grid[i][j]==0 || t>time[i][j])
-            return ;
-        
-        time[i][j]=t;
-        
-        dfs(grid,time,i-1,j,t+1);
-        dfs(grid,time,i+1,j,t+1);
-        dfs(grid,time,i,j-1,t+1);
-        dfs(grid,time,i,j+1,t+1);
-        
+            if(flag==true)
+                days++;
+            
+        }
+        if(fresh!=0)
+            return -1;
+        return days;
     }
 }
