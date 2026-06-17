@@ -1,36 +1,26 @@
 class Solution {
-    int n,m;
     public int[][] floodFill(int[][] image, int sr, int sc, int color) {
-        int same=image[sr][sc];
-        n=image.length;
-        m=image[0].length;
-        boolean visit[][]=new boolean[n][m];
-        for(int r=0;r<n;r++)
-        {
-            for(int c=0;c<m;c++)
-            {
-                dfs(same,sr,sc,color,image,visit);
-            }
-        }
-        return image; 
+        int initialColor = image[sr][sc];
+
+        if (initialColor != color) 
+            dfs(image, sr, sc, initialColor, color);
+
+        return image;
     }
 
-    public void dfs(int same,int i,int j,int color,int[][] image,boolean visit[][])
-    {
+    private void dfs(int[][] image, int r, int c, int initialColor, int newColor) {
 
-        if(i<0||i>n-1||j<0||j>m-1||visit[i][j]==true||image[i][j]!=same)
+        if (r < 0 || r >= image.length || c < 0 || c >= image[0].length)
             return;
-        if(!visit[i][j])
-        {
-            visit[i][j]=true;
-            image[i][j]=color;
-        }
-        dfs(same,i-1,j,color,image,visit);
-        dfs(same,i+1,j,color,image,visit);
-        dfs(same,i,j-1,color,image,visit);
-        dfs(same,i,j+1,color,image,visit);
-        
+
+        if (image[r][c] != initialColor)
+            return;
+
+        image[r][c] = newColor;
+
+        dfs(image, r - 1, c, initialColor, newColor);
+        dfs(image, r + 1, c, initialColor, newColor);
+        dfs(image, r, c - 1, initialColor, newColor);
+        dfs(image, r, c + 1, initialColor, newColor);
     }
-
-
 }
